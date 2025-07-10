@@ -17,7 +17,7 @@ export class TaskEffects {
           catchError((error) => of(TaskActions.loadTasksFailure({ error: error.message })))
       )
     )
-  );
+  ));
 
   addTask$ = createEffect(() =>
     this.actions$.pipe(
