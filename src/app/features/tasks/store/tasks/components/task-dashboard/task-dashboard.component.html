@@ -1,0 +1,72 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Task Management App</h1>
+    <button (click)="openAddTaskDialog()"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      Add New Task
+    </button>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div>
+        <label for="status-filter" class="block text-sm font-medium text-gray-700">Status</label>
+        <select id="status-filter" [(ngModel)]="selectedStatus" (change)="onStatusFilterChange(selectedStatus)"
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+          <option [value]="null">All Statuses</option>
+          <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="priority-filter" class="block text-sm font-medium text-gray-700">Priority</label>
+        <select id="priority-filter" [(ngModel)]="selectedPriority" (change)="onPriorityFilterChange(selectedPriority)"
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+          <option [value]="null">All Priorities</option>
+          <option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+        <div class="mt-1 flex rounded-md shadow-sm">
+          <input type="text" id="search" [(ngModel)]="searchTerm" (input)="onSearch()"
+                 class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-3 pr-12 sm:text-sm border-gray-300 rounded-md"
+                 placeholder="Search tasks...">
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <button (click)="exportToCSV()"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Export to CSV
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="(overdueTasks$ | async)?.length > 0" class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-red-700">
+          You have {{ (overdueTasks$ | async)?.length }} overdue task(s). Please complete them as soon as possible.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading$ | async" class="flex justify-center py-8">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+  </div>
+
+  <app-task-list *ngIf="!(loading$ | async)" 
+                 [tasks]="tasks$ | async" 
+                 (edit)="openEditTaskDialog($event)"
+                 (delete)="onDeleteTask($event)">
+  </app-task-list>
+</div>
